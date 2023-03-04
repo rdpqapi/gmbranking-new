@@ -17,6 +17,7 @@ use App\Models\State;
 use App\Models\BusinessProfile;
 use App\CustomLibrary\GetRanking;
 
+
 class RankbotConrtroller extends Controller
 {
     protected $ranksJob, $getRanking;
@@ -70,17 +71,13 @@ class RankbotConrtroller extends Controller
 
     public function storeOrganicResponse(array $responseData,$rank_id) : bool
     {
-        // Process the temperature data
-        //$processedData = // Process temperature data here
-
-        // Store the processed data in the database or send to an external system
-        // ...
-        $updateUser = Rank::where('rank_id',$rank_id)->update($responseData["response"]);
+        $result = Rank::where('rank_id',$rank_id)->update($responseData["response"]);
         return true;
     }
 
-    public function storeCardResponse($responseData)
+    public function storeCardResponse(array $responseData,string $rank_id) : bool
     {
-        // 
+        $result = Rank::where('rank_id',$rank_id)->update($responseData);
+        return true;
     }
 }

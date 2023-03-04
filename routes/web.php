@@ -14,5 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 use App\Http\Controllers\RankController;
 
-
-Route::get('/',[RankController::class,'getRanks']);
+Route::get('/',function(){
+    return "Hellow";
+});
+//Route::get('/',[RankController::class,'getRanks']);
