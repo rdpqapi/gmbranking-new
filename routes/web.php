@@ -12,8 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-use App\Http\Controllers\CseapiController;
+use App\Http\Controllers\RankController;
 
-Route::get('/', function () {
-    return 'Welcome to Laravel 9';
-});
+
+Route::get('/',[RankController::class,'getRanks']);
