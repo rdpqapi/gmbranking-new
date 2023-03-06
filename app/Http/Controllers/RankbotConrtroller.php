@@ -16,7 +16,8 @@ use App\Models\Region;
 use App\Models\State;
 use App\Models\BusinessProfile;
 use App\CustomLibrary\GetRanking;
-
+use Exception;
+use PhpParser\Node\Stmt\TryCatch;
 
 class RankbotConrtroller extends Controller
 {
@@ -28,16 +29,36 @@ class RankbotConrtroller extends Controller
         $this->getRanking = new GetRanking();
     }
 
-    public function getRanks()
+    public function getRank()
     {
-        $this->getSheduledJob($this->ranksJob->getRanks());
+        /*
+        * Start function of Get Ranking Ranking
+        * Get the total no of records from RanksJobs Model and call the getScheduleJob() Method
+        */
+        try{
+        $this->getSheduledJob($this->ranksJob->getTotalJob());
+
+        }catch(Exception $e){
+            echo $e->getMessage();
+        }
     }
 
+    /*
+    * Get The total no of Job Scheduled as a parameter
+    */
     public function getSheduledJob(int $total_job_scheduled): bool
     {
+        try{
 
-        for ($no_of_records_index = 0; $no_of_records_index < $total_job_scheduled; $no_of_records_index = $no_of_records_index + 8) 
+        /*
+        * For loop will repeat the No of Job by 8 no of records to perform rank operation we will
+        * pass max of 8 no of records
+        */
+        for ($no_of_records_index = 0; $no_of_records_index < $total_job_scheduled; $no_of_records_index = $no_of_records_index + 1) 
         {
+            /*
+            * Ge the no of Secheduled Jobs with ranking data and business profile datas.
+            */
             $result_rank_jobs = RanksJob::select('ranks_jobs.rank_job_id', 'ranks.rank_id', 'ranks_keywords.rank_keyword_id', 'ranks_keywords.rank_keyword_text',
                 'cities.city_id', 'cities.city_name', 'cities.city_latitude', 'cities.city_longitude', 'cities.country_id', 'countries.country_name', 'business_profiles.business_id',
                 'business_profiles.business_name', 'business_profiles.business_url', 'business_profiles.frequency')
@@ -46,38 +67,48 @@ class RankbotConrtroller extends Controller
                 ->leftJoin('cities', 'ranks.city_id', '=', 'cities.city_id')
                 ->leftJoin('countries', 'cities.country_id', '=', 'countries.country_id')
                 ->leftJoin('business_profiles', 'ranks.business_id', '=', 'business_profiles.business_id')
-                ->limit(30)->offset($no_of_records_index)
+                ->limit(1)->offset($no_of_records_index)
                 ->get();
             
+                /*
+                * If no of job found then RankingResponse method will be called of GetRanking Class which
+                * is for Handling the Ranking Process.
+                */
                 if(sizeof($result_rank_jobs)>0){
                     $this->getRanking->getRankingResponse($result_rank_jobs);
                 }
         }
+        }
+        catch(Exception $e){
+            echo $e->getMessage();
+        }
         return true;
     }
 
-    public function getGMBRanking()
-    {
-        //$client = new Client();
-        //$response = $client->get('http://api.openweathermap.org/data/2.5/weather?q=London&appid=YOUR_API_KEY');
-        //$responseData = json_decode($response->getBody(), true)['main']['temp'];
-
-        //Dispatch a job to process the temperature data
-        //DoCustomSearchRank::dispatch($responseData);
-
-        // Return a response to the API call
-        return response()->json(['message' => 'Temperature data processing in progress']);
-    }
-
+    /*
+    * storeCardResponse will update the final response of organic search ranking of business data and
+    * will update in the rank table
+    */
     public function storeOrganicResponse(array $responseData,$rank_id) : bool
     {
+       try{
         $result = Rank::where('rank_id',$rank_id)->update($responseData["response"]);
+       }catch(Exception $e){
+        echo $e->getMessage();
+       }
         return true;
     }
 
+    /*
+    * storeCardResponse will update the final response of ranking of business data will update in the rank table
+    */
     public function storeCardResponse(array $responseData,string $rank_id) : bool
     {
-        $result = Rank::where('rank_id',$rank_id)->update($responseData);
+        try{
+            $result = Rank::where('rank_id',$rank_id)->update($responseData);
+        }catch(Exception $e){
+        echo $e->getMessage();
+       }
         return true;
     }
 }

@@ -20,7 +20,7 @@ class RanksJob extends Model
 
     public function getTotalJob()
     {
-        return $this->Select('rank_job_id')->get()->count();
+        return $this->count();
     }
     
 }

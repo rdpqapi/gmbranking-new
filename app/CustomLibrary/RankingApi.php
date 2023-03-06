@@ -10,7 +10,7 @@ class RankingApi
 {
     private $GOOGLE_CLOUD_API_KEY = null;
     private $GOOGLE_CUSTOM_SEARCH_API_KEY = null;
-    private $MAX_RADIUS = 50000;
+    private $MAX_RADIUS = 1;
 
     public function __construct()
     {
@@ -18,42 +18,49 @@ class RankingApi
         $this->GOOGLE_CLOUD_API_KEY = env("GOOGLE_CLOUD_API_KEY");
         //Google Custom Search Key
         $this->GOOGLE_CUSTOM_SEARCH_API_KEY = env("CSE_KEY");
+        //Search for a Business upto Maximum radius of 50KM. Value is in meters.
+        $this->MAX_RADIUS = env("MAX_RADIUS");
     }
 
+    //Method for get Organic Results, Compare results upto 20 nos of record.
     public function getOrganicRanking(array $organic_ranking_objs) : array
     {
         try {
 
             if (empty($organic_ranking_objs["keywords"]))
             {
-                throw new Exception('Empty keywords');
+                return false;
             }
 
             if (empty($organic_ranking_objs["city"])) {
-                throw new Exception('Empty city');
+                return false;
             }
 
             if (empty($organic_ranking_objs["country_id"])) {
-                throw new Exception('Empty Country_ID');
+                return false;
             }
 
             if (empty($organic_ranking_objs["country"])) {
-                throw new Exception('Empty Country');
+                return false;
             }
 
             if (empty($organic_ranking_objs["website"])) {
-                throw new Exception('Empty Business Website');
+                return false;
             }
 
             $business_ranking_datas = array();
             $cse_resultset1 = array();
 
+            //Query for search
             $searchable_query = "&gl=" . $organic_ranking_objs["country_id"] . "&lr=lang_en&num=10&q=" . urlencode($organic_ranking_objs["keywords"] . " in " . $organic_ranking_objs["city"] . ", " . $organic_ranking_objs["country"]) . "&searchType=searchTypeUndefined";
+
+            //$i for the fast 10 records and will increment by 1 to search for the next get 10 no of records.
             for ($i = 0; $i < 2; $i++) {
                 $pagination = ($i == 0) ? ($i + 1) : ($i + 10);
 
                 $api_response = Http::get("https://customsearch.googleapis.com/customsearch/v1?c2coff=0&cx=" . $this->GOOGLE_CUSTOM_SEARCH_API_KEY . "&filter=0" . $searchable_query . "&siteSearchFilter=e&start=".$pagination."&key=" . $this->GOOGLE_CLOUD_API_KEY);
 
+               
                 if ($api_response->successful()) {
                     $business_ranking_data = json_decode($api_response->body(), true);
                     $business_ranking_data = $business_ranking_data["items"];
@@ -68,7 +75,7 @@ class RankingApi
                 }
 
                 if ($api_response->failed()) {
-                    
+                    $business_ranking_datas=array();
                 }
             }
 
@@ -88,6 +95,7 @@ class RankingApi
         }
     }
 
+    //Method is for get Card Search 
     public function getCardRanking(array $card_param_objs): array
     {
         $response_array=array();
@@ -144,7 +152,7 @@ class RankingApi
             $response_array["result"]=array();
         }
 
-        } catch (\Throwable $th) 
+        } catch (Exception $th) 
         {
             $response_array["status"]=false;
             $response_array["message"]="fail";
@@ -154,6 +162,7 @@ class RankingApi
         return $response_array;
     }
 
+    //Get the PlaceDetail and to compare the business by Website URL
     public function getPlaceDetails(string $place_id,string $business_url): array
     {
         $response=array();
@@ -166,7 +175,9 @@ class RankingApi
             if ($api_response->successful()) {
                 $url_business_profile_detail_api = json_decode($api_response->body(), true);
 
+                //If response has the website so we can compare the results
                 if(!empty($url_business_profile_detail_api["result"]["website"])){
+                    //If result is matche the update the busines_is_found variable to 1 else store the competitors data
                     if($business_url==HelperLibrary::getFormatedURL($url_business_profile_detail_api["result"]["website"]))
                     {
                         $business_is_found=1;
@@ -196,7 +207,7 @@ class RankingApi
                 );
             }
 
-        } catch (\Throwable $th) {
+        } catch (Exception $th) {
             return array(
                 "status"=>false,
                 "isfound"=>$business_is_found,
