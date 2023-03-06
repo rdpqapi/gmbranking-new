@@ -19,7 +19,7 @@ class GetRanking
     * Ranking Response method will handle the Ranking Request and Job request will handle.
     * Prams will handle collection array of jobs
     */
-    public function getRankingResponse(object $rank_job_sheduled_objs)// : bool
+    public function getRankingResponse(array $rank_job_sheduled_objs)// : bool
     {
         try
         {
@@ -33,15 +33,15 @@ class GetRanking
                 * Response in database which is defined under RankBotController
                 */
                 $response=$this->rankingApi->getOrganicRanking(array(
-                    "keywords"=>$data->rank_keyword_text,
-                    "city"=>$data->city_name,
-                    "country_id"=>$data->country_id,
-                    "country"=>$data->country_name,
-                    "website"=>HelperLibrary::getFormatedURL($data->business_url))
+                    "keywords"=>$data["rank_keyword_text"],
+                    "city"=>$data["city_name"],
+                    "country_id"=>$data["country_id"],
+                    "country"=>$data["country_name"],
+                    "website"=>HelperLibrary::getFormatedURL($data["business_url"]))
                 );
                 
                
-                HelperLibrary::storeOrganicResponse($response,$data->rank_id);
+                HelperLibrary::storeOrganicResponse($response,$data["rank_id"]);
                 
                 /*
                 * For get the Card Response Param has passed to the getCardRanking() method of Ranking API class,
@@ -49,12 +49,12 @@ class GetRanking
                 * the no of results as an array obj.
                 */
                 $response_card=$this->rankingApi->getCardRanking(array(
-                    "keywords"=>$data->rank_keyword_text,
-                    "city"=>$data->city_name,
-                    "country"=>$data->country_name,
-                    "website"=>HelperLibrary::getFormatedURL($data->business_url),
-                    "latitude"=>$data->city_latitude,
-                    "logitude"=>$data->city_longitude
+                    "keywords"=>$data["rank_keyword_text"],
+                    "city"=>$data["city_name"],
+                    "country"=>$data["country_name"],
+                    "website"=>HelperLibrary::getFormatedURL($data["business_url"]),
+                    "latitude"=>$data["city_latitude"],
+                    "logitude"=>$data["city_longitude"]
                     )
                 );
 
@@ -80,7 +80,7 @@ class GetRanking
                             * pass the place_id as a parameter into the method with business_profile website url to
                             * compare and method will response as isFound (True/False) and if false the list of compititors.
                             */
-                            $place_id_response=$this->rankingApi->getPlaceDetails($values["place_id"],HelperLibrary::getFormatedURL($data->business_url));
+                            $place_id_response=$this->rankingApi->getPlaceDetails($values["place_id"],HelperLibrary::getFormatedURL($data["business_url"]));
                            
                             if((bool)$place_id_response["status"]){
                                 $rank=$key+1;
@@ -106,7 +106,7 @@ class GetRanking
                         'rank_card_found'=>$is_card_found,
                         'rank_last_test_utc'=>Carbon::now(),
                         'if_none_compititors'=>($is_card_found==0)?json_encode($compititors_list):NULL
-                    ),$data->rank_id);
+                    ),$data["rank_id"]);
                 }
                 //DB::table('ranks_jobs')->where('rank_job_id',$data->rank_job_id)->delete();
             }

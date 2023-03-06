@@ -16,14 +16,14 @@ class ProcessRankJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $rank_jobs;
+    private array $rank_jobs;
     private $getRanking;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($result_rank_jobs)
+    public function __construct(array $result_rank_jobs)
     {
         $this->rank_jobs=$result_rank_jobs;
         $this->getRanking = new GetRanking();
@@ -48,6 +48,5 @@ class ProcessRankJob implements ShouldQueue
     public function failed($exception)
     {
         Log::info($exception->getMessage());
-        // etc...
     }
 }

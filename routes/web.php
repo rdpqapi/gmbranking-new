@@ -12,9 +12,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-use App\Http\Controllers\RankController;
+use App\Http\Controllers\RankbotConrtroller;
 
-Route::get('/',function(){
-    return "Hellow";
-});
-//Route::get('/',[RankController::class,'getRanks']);
+Route::get('/',[RankbotConrtroller::class,'getRank']);

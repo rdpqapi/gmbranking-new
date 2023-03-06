@@ -65,7 +65,7 @@ class RankbotConrtroller extends Controller
                 ->leftJoin('countries', 'cities.country_id', '=', 'countries.country_id')
                 ->leftJoin('business_profiles', 'ranks.business_id', '=', 'business_profiles.business_id')
                 ->limit(8)->offset($no_of_records_index)
-                ->get();
+                ->get()->toArray();
             
             
                 /*
