@@ -9,7 +9,8 @@ use Carbon\Carbon;
 
 class GetRanking
 {
-    protected $rankingApi,$rankBotController;
+    protected $rankingApi;
+    private $rankBotController;
 
     public function __construct()
     {
@@ -27,6 +28,7 @@ class GetRanking
         {
             foreach($rank_job_sheduled_objs as $data){
 
+               
                 /*
                 * RankingApi class has getOrganicRanking method for call the Organic search result reponses.
                 * And retur the response if found organic response from the API.
@@ -41,6 +43,7 @@ class GetRanking
                     "website"=>HelperLibrary::getFormatedURL($data->business_url))
                 );
                 
+               
                 $this->rankBotController->storeOrganicResponse($response,$data->rank_id);
                 
                 /*
@@ -58,10 +61,13 @@ class GetRanking
                     )
                 );
 
+               
+
                 /*
                 * If card api response is true and it carries data responses.
                 */
                 if($response_card["status"]){
+                    
                     $compititors_list=array();
                     $is_card_found=0;
                     $rank=0;
@@ -78,7 +84,7 @@ class GetRanking
                             * compare and method will response as isFound (True/False) and if false the list of compititors.
                             */
                             $place_id_response=$this->rankingApi->getPlaceDetails($values["place_id"],HelperLibrary::getFormatedURL($data->business_url));
-                            
+                           
                             if((bool)$place_id_response["status"]){
                                 $rank=$key+1;
                                 $is_card_found=$place_id_response["isfound"];
@@ -91,7 +97,7 @@ class GetRanking
                             break;
                         }
                     }
-
+                   
                     /*
                     * We are calling the storeCardResponse for updating the ranking records into table the method
                     * is defined in the rankBotController for updation of record.

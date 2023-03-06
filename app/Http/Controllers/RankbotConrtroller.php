@@ -16,17 +16,20 @@ use App\Models\Region;
 use App\Models\State;
 use App\Models\BusinessProfile;
 use App\CustomLibrary\GetRanking;
+use App\Jobs\ProcessRankJob;
 use Exception;
-use PhpParser\Node\Stmt\TryCatch;
 
 class RankbotConrtroller extends Controller
 {
-    protected $ranksJob, $getRanking;
+    //protected $ranksJob;
+    protected $getRanking;
+    protected $processRankJob;
 
     public function __construct()
     {
-        $this->ranksJob = new RanksJob();
+       // $this->ranksJob = new RanksJob();
         $this->getRanking = new GetRanking();
+        $this->processRankJob=new ProcessRankJob();
     }
 
     public function getRank()
@@ -36,7 +39,7 @@ class RankbotConrtroller extends Controller
         * Get the total no of records from RanksJobs Model and call the getScheduleJob() Method
         */
         try{
-        $this->getSheduledJob($this->ranksJob->getTotalJob());
+        $this->getSheduledJob(RanksJob::count());
 
         }catch(Exception $e){
             echo $e->getMessage();
@@ -67,8 +70,9 @@ class RankbotConrtroller extends Controller
                 ->leftJoin('cities', 'ranks.city_id', '=', 'cities.city_id')
                 ->leftJoin('countries', 'cities.country_id', '=', 'countries.country_id')
                 ->leftJoin('business_profiles', 'ranks.business_id', '=', 'business_profiles.business_id')
-                ->limit(1)->offset($no_of_records_index)
+                ->limit(8)->offset($no_of_records_index)
                 ->get();
+            
             
                 /*
                 * If no of job found then RankingResponse method will be called of GetRanking Class which
@@ -92,7 +96,7 @@ class RankbotConrtroller extends Controller
     public function storeOrganicResponse(array $responseData,$rank_id) : bool
     {
        try{
-        $result = Rank::where('rank_id',$rank_id)->update($responseData["response"]);
+        $result = Rank::where('rank_id',$rank_id)->update($responseData);
        }catch(Exception $e){
         echo $e->getMessage();
        }

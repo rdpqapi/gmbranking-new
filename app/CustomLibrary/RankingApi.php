@@ -127,9 +127,8 @@ class RankingApi
             }
 
 
-        
-
-        $api_response = Http::get("https://maps.googleapis.com/maps/api/place/search/json?location=".$card_param_objs["latitude"].",".$card_param_objs["logitude"]."&radius=".$MAX_RADIUS."&keyword=".urlencode($card_param_objs["keywords"]." in ".$card_param_objs["city"].", ".$card_param_objs["country"])."&sensor=false&key=".$GOOGLE_CLOUD_API_KEY);
+    
+        $api_response = Http::get("https://maps.googleapis.com/maps/api/place/search/json?location=".$card_param_objs["latitude"].",".$card_param_objs["logitude"]."&radius=".$this->MAX_RADIUS."&keyword=".urlencode($card_param_objs["keywords"]." in ".$card_param_objs["city"].", ".$card_param_objs["country"])."&sensor=false&key=".$this->GOOGLE_CLOUD_API_KEY);
 
         if ($api_response->successful()) {
             $business_profileranking_datas = json_decode($api_response->body(), true);
@@ -155,7 +154,7 @@ class RankingApi
         } catch (Exception $th) 
         {
             $response_array["status"]=false;
-            $response_array["message"]="fail";
+            $response_array["message"]="fail".$th->getMessage();
             $response_array["result"]=array();
         }
 
@@ -170,7 +169,7 @@ class RankingApi
         $compititors_list=array();
         try {
         
-            $api_response = Http::get("https://maps.googleapis.com/maps/api/place/details/json?place_id=".$place_id."&fields=formatted_phone_number,website&key=".$GOOGLE_CLOUD_API_KEY);
+            $api_response = Http::get("https://maps.googleapis.com/maps/api/place/details/json?place_id=".$place_id."&fields=formatted_phone_number,website&key=".$this->GOOGLE_CLOUD_API_KEY);
 
             if ($api_response->successful()) {
                 $url_business_profile_detail_api = json_decode($api_response->body(), true);
