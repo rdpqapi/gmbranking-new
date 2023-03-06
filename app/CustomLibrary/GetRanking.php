@@ -4,7 +4,6 @@ namespace App\CustomLibrary;
 use Exception;
 use App\CustomLibrary\RankingApi;
 use App\CustomLibrary\HelperLibrary;
-use App\Http\Controllers\RankbotConrtroller;
 use Carbon\Carbon;
 
 class GetRanking

@@ -15,21 +15,15 @@ use App\Models\RanksTest;
 use App\Models\Region;
 use App\Models\State;
 use App\Models\BusinessProfile;
-use App\CustomLibrary\GetRanking;
 use App\Jobs\ProcessRankJob;
 use Exception;
 
 class RankbotConrtroller extends Controller
 {
-    //protected $ranksJob;
-    private $getRanking;
-    private $processRankJob;
 
     public function __construct()
     {
-       // $this->ranksJob = new RanksJob();
-        $this->getRanking = new GetRanking();
-        $this->processRankJob=new ProcessRankJob();
+        
     }
 
     public function getRank()
@@ -49,7 +43,7 @@ class RankbotConrtroller extends Controller
     /*
     * Get The total no of Job Scheduled as a parameter
     */
-    public function getSheduledJob(int $total_job_scheduled): bool
+    public function getSheduledJob(int $total_job_scheduled)
     {
         try{
 
@@ -79,21 +73,12 @@ class RankbotConrtroller extends Controller
                 * is for Handling the Ranking Process.
                 */
                 if(sizeof($result_rank_jobs)>0){
-                    $this->getRanking->getRankingResponse($result_rank_jobs);
+                    ProcessRankJob::dispatch($result_rank_jobs);
                 }
         }
         }
         catch(Exception $e){
             echo $e->getMessage();
         }
-        return true;
-    }
-
-   
-    public function storeOrganicResponse(array $responseData,$rank_id)
-    {
-       
-    }
-
-    
+    }    
 }

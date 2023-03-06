@@ -134,10 +134,6 @@ class RankingApi
             $business_profileranking_datas = json_decode($api_response->body(), true);
             $business_profileranking_datas = $business_profileranking_datas["results"];
 
-            $rank_in_card=0;
-            $rec_found_status=0;
-            $compititors_list=array();
-
             if (sizeof($business_profileranking_datas) > 0) {
                 $response_array["status"]=true;
                 $response_array["message"]="success";
