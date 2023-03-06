@@ -22,8 +22,8 @@ use Exception;
 class RankbotConrtroller extends Controller
 {
     //protected $ranksJob;
-    protected $getRanking;
-    protected $processRankJob;
+    private $getRanking;
+    private $processRankJob;
 
     public function __construct()
     {
@@ -89,30 +89,11 @@ class RankbotConrtroller extends Controller
         return true;
     }
 
-    /*
-    * storeCardResponse will update the final response of organic search ranking of business data and
-    * will update in the rank table
-    */
-    public function storeOrganicResponse(array $responseData,$rank_id) : bool
+   
+    public function storeOrganicResponse(array $responseData,$rank_id)
     {
-       try{
-        $result = Rank::where('rank_id',$rank_id)->update($responseData);
-       }catch(Exception $e){
-        echo $e->getMessage();
-       }
-        return true;
+       
     }
 
-    /*
-    * storeCardResponse will update the final response of ranking of business data will update in the rank table
-    */
-    public function storeCardResponse(array $responseData,string $rank_id) : bool
-    {
-        try{
-            $result = Rank::where('rank_id',$rank_id)->update($responseData);
-        }catch(Exception $e){
-        echo $e->getMessage();
-       }
-        return true;
-    }
+    
 }

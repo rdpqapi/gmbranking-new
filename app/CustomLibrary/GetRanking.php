@@ -9,13 +9,11 @@ use Carbon\Carbon;
 
 class GetRanking
 {
-    protected $rankingApi;
-    private $rankBotController;
+    private $rankingApi;
 
     public function __construct()
     {
         $this->rankingApi = new RankingApi();
-        $this->rankBotController = new RankbotConrtroller();
     }
 
     /*
@@ -44,7 +42,7 @@ class GetRanking
                 );
                 
                
-                $this->rankBotController->storeOrganicResponse($response,$data->rank_id);
+                HelperLibrary::storeOrganicResponse($response,$data->rank_id);
                 
                 /*
                 * For get the Card Response Param has passed to the getCardRanking() method of Ranking API class,
@@ -102,7 +100,7 @@ class GetRanking
                     * We are calling the storeCardResponse for updating the ranking records into table the method
                     * is defined in the rankBotController for updation of record.
                     */
-                    $this->rankBotController->storeCardResponse(array(
+                    HelperLibrary::storeCardResponse(array(
                         'rank_google_business' => $rank, 
                         'rank_card_none' => (sizeof($response_card["result"]) == 0) ? 1 : 0,
                         'rank_card_competitor'=>(sizeof($compititors_list)>0) ? 1 : 0,
